@@ -8,21 +8,16 @@ public class SecureWebServer {
 
     public static void main(String[] args) {
         configureLogger();
-
+        
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             logger.info("Server started on port: " + PORT);
-
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                handleRequest(clientSocket);
+                // Handle request (placeholder)
             }
         } catch (IOException e) {
             logger.severe("Server error: " + e.getMessage());
         }
-    }
-
-    private static void handleRequest(Socket clientSocket) {
-        // Placeholder for request handling
     }
 
     private static void configureLogger() {

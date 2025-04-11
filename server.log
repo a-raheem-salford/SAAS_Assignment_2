@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2025-04-11T12:53:01.574527888Z</date>
+  <millis>1744375981574</millis>
+  <nanos>527888</nanos>
+  <sequence>0</sequence>
+  <logger>SecureWebServer</logger>
+  <level>INFO</level>
+  <class>SecureWebServer</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Server started on port: 8080</message>
+</record>
+</log>

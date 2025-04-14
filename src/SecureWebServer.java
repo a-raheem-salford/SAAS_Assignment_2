@@ -8,9 +8,11 @@ public class SecureWebServer {
     private static final Logger logger = Logger.getLogger(SecureWebServer.class.getName());
     private static final int PORT = 8080;
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(10);
+    private static final String ROOT_DIR = "./www";
 
     public static void main(String[] args) {
         configureLogger();
+        createRootDirectory();
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             logger.info("Server started on port: " + PORT);
             while (true) {
@@ -31,6 +33,14 @@ public class SecureWebServer {
         }
     }
 
+    private static void createRootDirectory() {
+        try {
+            Files.createDirectories(Paths.get(ROOT_DIR));
+        } catch (IOException e) {
+            logger.severe("Failed to create root directory: " + e.getMessage());
+        }
+    }
+
     private static void handleRequest(Socket clientSocket) {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 OutputStream out = clientSocket.getOutputStream()) {
@@ -40,7 +50,7 @@ public class SecureWebServer {
                 return;
 
             String[] parts = requestLine.split(" ");
-            String method = parts[0];
+            String method = parts[0].toUpperCase(); // NEW: Standardize method case
             String path = parts[1];
 
             // Handle root path as index.html
@@ -55,25 +65,49 @@ public class SecureWebServer {
                 return;
             }
 
-            // Only support GET method
-            if (!method.equalsIgnoreCase("GET")) {
-                sendResponse(out, "HTTP/1.1 405 Method Not Allowed\r\n\r\nMethod Not Allowed.");
-                return;
-            }
+            // NEW: Support both GET and POST methods
+            if (method.equals("GET")) {
+                // Existing GET handling
+                if (Files.exists(sanitizedPath) && !Files.isDirectory(sanitizedPath)) {
+                    byte[] fileBytes = Files.readAllBytes(sanitizedPath);
+                    String contentType = Files.probeContentType(sanitizedPath);
+                    if (contentType == null)
+                        contentType = "application/octet-stream";
 
-            // Serve file if it exists
-            if (Files.exists(sanitizedPath) && !Files.isDirectory(sanitizedPath)) {
-                byte[] fileBytes = Files.readAllBytes(sanitizedPath);
-                String contentType = Files.probeContentType(sanitizedPath);
-                if (contentType == null) {
-                    contentType = "application/octet-stream";
+                    String response = "HTTP/1.1 200 OK\r\nContent-Type: " + contentType + "\r\n\r\n";
+                    out.write(response.getBytes());
+                    out.write(fileBytes);
+                } else {
+                    sendResponse(out, "HTTP/1.1 404 Not Found\r\n\r\nFile Not Found.");
+                }
+            } else if (method.equals("POST")) {
+                // NEW: POST handling for form submissions
+                StringBuilder payload = new StringBuilder();
+
+                // Read headers first
+                while (true) {
+                    String headerLine = in.readLine();
+                    if (headerLine == null || headerLine.isEmpty())
+                        break;
                 }
 
-                String responseHeaders = "HTTP/1.1 200 OK\r\nContent-Type: " + contentType + "\r\n\r\n";
-                out.write(responseHeaders.getBytes());
-                out.write(fileBytes);
+                // Read POST data
+                while (in.ready()) {
+                    payload.append((char) in.read());
+                }
+
+                // Asynchronous processing for security isolation
+                threadPool.execute(() -> {
+                    try {
+                        saveFormData(payload.toString());
+                    } catch (IOException e) {
+                        logger.severe("Failed to save form data: " + e.getMessage());
+                    }
+                });
+
+                sendResponse(out, "HTTP/1.1 200 OK\r\n\r\nForm submission received.");
             } else {
-                sendResponse(out, "HTTP/1.1 404 Not Found\r\n\r\nFile Not Found.");
+                sendResponse(out, "HTTP/1.1 405 Method Not Allowed\r\n\r\nMethod Not Allowed.");
             }
 
         } catch (IOException e) {
@@ -81,11 +115,20 @@ public class SecureWebServer {
         }
     }
 
+    // NEW: Add this helper method
+    private static void saveFormData(String data) throws IOException {
+        Path dataDir = Paths.get(ROOT_DIR, "data");
+        Files.createDirectories(dataDir);
+        Path file = dataDir.resolve("submissions.txt");
+        Files.write(file, (data + System.lineSeparator()).getBytes(),
+                StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+    }
+
     private static Path sanitizePath(String requestPath) {
         try {
             Path root = Paths.get("www").toAbsolutePath();
             Path resolvedPath = root.resolve(requestPath.substring(1)).normalize();
-    
+
             // Make sure the resolved path is still inside www
             if (!resolvedPath.startsWith(root)) {
                 return null; // Block directory traversal

@@ -42,11 +42,37 @@ public class SecureWebServer {
             String method = parts[0];
             String path = parts[1];
 
+            // Handle root path as index.html
+            if (path.equals("/")) {
+                path = "/index.html";
+            }
+
             // Security: Sanitize path
             Path sanitizedPath = sanitizePath(path);
             if (sanitizedPath == null) {
-                sendResponse(out, "HTTP/1.1 403 Forbidden\r\n\r\n");
+                sendResponse(out, "HTTP/1.1 403 Forbidden\r\n\r\nAccess Denied.");
                 return;
+            }
+
+            // Only support GET method
+            if (!method.equalsIgnoreCase("GET")) {
+                sendResponse(out, "HTTP/1.1 405 Method Not Allowed\r\n\r\nMethod Not Allowed.");
+                return;
+            }
+
+            // Serve file if it exists
+            if (Files.exists(sanitizedPath) && !Files.isDirectory(sanitizedPath)) {
+                byte[] fileBytes = Files.readAllBytes(sanitizedPath);
+                String contentType = Files.probeContentType(sanitizedPath);
+                if (contentType == null) {
+                    contentType = "application/octet-stream";
+                }
+
+                String responseHeaders = "HTTP/1.1 200 OK\r\nContent-Type: " + contentType + "\r\n\r\n";
+                out.write(responseHeaders.getBytes());
+                out.write(fileBytes);
+            } else {
+                sendResponse(out, "HTTP/1.1 404 Not Found\r\n\r\nFile Not Found.");
             }
 
         } catch (IOException e) {
@@ -56,8 +82,11 @@ public class SecureWebServer {
 
     private static Path sanitizePath(String requestPath) {
         try {
-            Path resolvedPath = Paths.get("./www").resolve(requestPath.substring(1)).normalize();
-            if (!resolvedPath.startsWith(Paths.get("./www").toAbsolutePath())) {
+            Path root = Paths.get("www").toAbsolutePath();
+            Path resolvedPath = root.resolve(requestPath.substring(1)).normalize();
+    
+            // Make sure the resolved path is still inside www
+            if (!resolvedPath.startsWith(root)) {
                 return null; // Block directory traversal
             }
             return resolvedPath;

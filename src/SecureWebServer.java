@@ -2,19 +2,20 @@ import java.io.*;
 import java.net.*;
 import java.util.logging.*;
 import java.nio.file.*;
+import java.util.concurrent.*;
 
 public class SecureWebServer {
     private static final Logger logger = Logger.getLogger(SecureWebServer.class.getName());
     private static final int PORT = 8080;
+    private static final ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
     public static void main(String[] args) {
         configureLogger();
-
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             logger.info("Server started on port: " + PORT);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                handleRequest(clientSocket);
+                threadPool.execute(() -> handleRequest(clientSocket)); // Multi-threading
             }
         } catch (IOException e) {
             logger.severe("Server error: " + e.getMessage());

@@ -97,13 +97,25 @@ public class SecureWebServer {
                 }
 
                 // Asynchronous processing for security isolation
-                threadPool.execute(() -> {
-                    try {
-                        saveFormData(payload.toString());
-                    } catch (IOException e) {
-                        logger.severe("Failed to save form data: " + e.getMessage());
+                try {
+                    ProcessBuilder pb = new ProcessBuilder(
+                            "java", "-cp", "out", "FormDataSaver", payload.toString());
+                    pb.redirectErrorStream(true); // Combine stdout + stderr
+
+                    Process process = pb.start();
+
+                    // Optional: read process output for logging/debugging
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(process.getInputStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            logger.info("[FormDataSaver] " + line);
+                        }
                     }
-                });
+
+                } catch (IOException e) {
+                    logger.severe("Failed to start FormDataSaver process: " + e.getMessage());
+                }
 
                 sendResponse(out, "HTTP/1.1 200 OK\r\n\r\nForm submission received.");
             } else {

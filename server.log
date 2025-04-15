@@ -2,9 +2,9 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2025-04-14T12:43:50.400062415Z</date>
-  <millis>1744634630400</millis>
-  <nanos>62415</nanos>
+  <date>2025-04-15T13:26:58.910699170Z</date>
+  <millis>1744723618910</millis>
+  <nanos>699170</nanos>
   <sequence>0</sequence>
   <logger>SecureWebServer</logger>
   <level>INFO</level>
@@ -12,5 +12,29 @@
   <method>main</method>
   <thread>1</thread>
   <message>Server started on port: 8080</message>
+</record>
+<record>
+  <date>2025-04-15T13:27:02.538226486Z</date>
+  <millis>1744723622538</millis>
+  <nanos>226486</nanos>
+  <sequence>1</sequence>
+  <logger>SecureWebServer</logger>
+  <level>INFO</level>
+  <class>SecureWebServer</class>
+  <method>handleRequest</method>
+  <thread>14</thread>
+  <message>[FormDataSaver] Form data saved successfully.</message>
+</record>
+<record>
+  <date>2025-04-15T13:27:16.480932893Z</date>
+  <millis>1744723636480</millis>
+  <nanos>932893</nanos>
+  <sequence>2</sequence>
+  <logger>SecureWebServer</logger>
+  <level>INFO</level>
+  <class>SecureWebServer</class>
+  <method>handleRequest</method>
+  <thread>18</thread>
+  <message>[FormDataSaver] Form data saved successfully.</message>
 </record>
 </log>

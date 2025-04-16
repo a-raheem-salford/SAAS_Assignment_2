@@ -1,0 +1,116 @@
+
+
+Author: AbdulRaheem  
+Date: April 2025  
+Port: 8080  
+Language: Java (JDK 17+)  
+Dependencies: None (Standard Java Libraries Only)
+
+==========================
+Compilation Instructions
+==========================
+
+
+
+1. Compile both Java files:
+
+   javac -d out src/SecureWebServer.java src/FormDataSaver.java
+
+   This creates compiled `.class` files inside the `out` directory.
+
+2. Run the server:
+
+   java -cp out SecureWebServer
+
+   Server will start on http://localhost:8080
+
+==========================
+Dependencies Used
+==========================
+
+- Language: Java
+- JDK: Version 17 or higher
+- No external libraries or frameworks used.
+- Built-in Java classes:
+  - java.net.*
+  - java.io.*
+  - java.util.logging.*
+  - java.util.concurrent.*
+  - java.nio.file.*
+
+==========================
+Testing Functionalities
+==========================
+
+Test each functionality using a browser or curl:
+
+------------------------------------------------------
+1. Test the GET method
+------------------------------------------------------
+curl http://localhost:8080/index.html
+
+------------------------------------------------------
+2. Test serving a file to the client
+------------------------------------------------------
+echo "Sample Text" > www/sample.txt  
+curl http://localhost:8080/sample.txt
+
+------------------------------------------------------
+3. Test serving a file in a subdirectory
+------------------------------------------------------
+mkdir -p www/docs  
+echo "Subfolder File" > www/docs/test.txt  
+curl http://localhost:8080/docs/test.txt
+
+------------------------------------------------------
+4. Test HTTP Response headers
+------------------------------------------------------
+
+4.1 Status 200 OK  
+curl -i http://localhost:8080/index.html  
+Expected: HTTP/1.1 200 OK
+
+4.2 Status 404 Not Found  
+curl -i http://localhost:8080/missingfile.html  
+Expected: HTTP/1.1 404 Not Found
+
+------------------------------------------------------
+5. Test browser rendering of HTML
+------------------------------------------------------
+Open in browser:  
+http://localhost:8080/index.html  
+Page should render as a website, not raw HTML.
+
+------------------------------------------------------
+6. Test POST method with form submission
+------------------------------------------------------
+
+Visit in browser:  
+http://localhost:8080/index.html  
+Submit form → Check www/data/submissions.txt
+
+6.2 Using cURL:
+curl -X POST -d "name=test&email=example@test.com" http://localhost:8080/
+
+------------------------------------------------------
+7. Confirm form data is stored
+------------------------------------------------------
+cat www/data/submissions.txt  
+Each line represents a saved form submission.
+
+==========================
+Logging
+==========================
+All server and form logs are recorded in:
+
+server.log
+
+Includes info, errors, and output from FormDataSaver.
+
+==========================
+Shutdown Server
+==========================
+To stop the server:
+- Press Ctrl + C in the terminal
+
+

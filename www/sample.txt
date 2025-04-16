@@ -1,0 +1,2 @@
+Sample text .
+This file is generated to test the functionlaity of serving file to the client.

@@ -2,9 +2,9 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2025-04-15T13:26:58.910699170Z</date>
-  <millis>1744723618910</millis>
-  <nanos>699170</nanos>
+  <date>2025-04-16T12:14:29.433895049Z</date>
+  <millis>1744805669433</millis>
+  <nanos>895049</nanos>
   <sequence>0</sequence>
   <logger>SecureWebServer</logger>
   <level>INFO</level>
@@ -14,9 +14,9 @@
   <message>Server started on port: 8080</message>
 </record>
 <record>
-  <date>2025-04-15T13:27:02.538226486Z</date>
-  <millis>1744723622538</millis>
-  <nanos>226486</nanos>
+  <date>2025-04-16T12:26:41.922781736Z</date>
+  <millis>1744806401922</millis>
+  <nanos>781736</nanos>
   <sequence>1</sequence>
   <logger>SecureWebServer</logger>
   <level>INFO</level>
@@ -26,15 +26,26 @@
   <message>[FormDataSaver] Form data saved successfully.</message>
 </record>
 <record>
-  <date>2025-04-15T13:27:16.480932893Z</date>
-  <millis>1744723636480</millis>
-  <nanos>932893</nanos>
+  <date>2025-04-16T12:40:55.008104522Z</date>
+  <millis>1744807255008</millis>
+  <nanos>104522</nanos>
   <sequence>2</sequence>
   <logger>SecureWebServer</logger>
   <level>INFO</level>
   <class>SecureWebServer</class>
   <method>handleRequest</method>
-  <thread>18</thread>
+  <thread>15</thread>
   <message>[FormDataSaver] Form data saved successfully.</message>
 </record>
-</log>
+<record>
+  <date>2025-04-16T12:57:34.568685199Z</date>
+  <millis>1744808254568</millis>
+  <nanos>685199</nanos>
+  <sequence>3</sequence>
+  <logger>SecureWebServer</logger>
+  <level>INFO</level>
+  <class>SecureWebServer</class>
+  <method>handleRequest</method>
+  <thread>19</thread>
+  <message>[FormDataSaver] Form data saved successfully.</message>
+</record>

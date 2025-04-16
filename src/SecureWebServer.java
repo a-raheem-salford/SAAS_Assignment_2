@@ -127,14 +127,7 @@ public class SecureWebServer {
         }
     }
 
-    // NEW: Add this helper method
-    private static void saveFormData(String data) throws IOException {
-        Path dataDir = Paths.get(ROOT_DIR, "data");
-        Files.createDirectories(dataDir);
-        Path file = dataDir.resolve("submissions.txt");
-        Files.write(file, (data + System.lineSeparator()).getBytes(),
-                StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-    }
+
 
     private static Path sanitizePath(String requestPath) {
         try {
